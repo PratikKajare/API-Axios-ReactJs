@@ -1,17 +1,21 @@
 import React from 'react'
 import { useState } from 'react'
 import axios from 'axios'
+import InfiniteScroll from 'react-infinite-scroll-component';
+
 const Axios_api = () => {
 
     const [news, setNews] = useState([])
-
+    const [album, setAlbum] = useState(1);
     const fetchData = () => {
         // console.log("click")
-        axios.get("https://jsonplaceholder.typicode.com/photos")
+        axios.get(`https://jsonplaceholder.typicode.com/photos?albumId=${album}`)
         
         .then((response) => {
             console.log(response)
             setNews(response.data)
+            setAlbum(album+1)
+            setNews(news.concat(response.data))
         })
     }
     return (
@@ -23,6 +27,18 @@ const Axios_api = () => {
                 </div>
             </div>
             <div className="container-fluid mt-3" style={{background:'orange'}}>
+            <InfiniteScroll
+                    dataLength={news.length} //This is important field to render the next data
+                    next={fetchData}
+                    hasMore={true}
+                    loader={<h4>Loading</h4>}
+                    endMessage={
+                        <p style={{ textAlign: 'center' }}>
+                            <b>Yay! You have seen it all</b>
+                        </p>
+                    }
+                    
+                >
                 <div className="row">
                 {
                     news.map((value) => {
@@ -44,6 +60,7 @@ const Axios_api = () => {
                     })
                 }
                 </div>
+                </InfiniteScroll>
             </div>
         </>
     )
